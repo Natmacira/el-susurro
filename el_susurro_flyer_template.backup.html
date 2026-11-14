@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>El susurro de todas las cosas — Flyer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@1,500;1,600&family=Oswald:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #080808;
+    --pink: #e9a8b9;
+    --pink-bright: #f078a2;
+    --blue: #1760d5;
+    --orange: #ff6b20;
+    --cream: #eee5e2;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    padding: 28px;
+    display: grid;
+    place-items: center;
+    background: #222;
+    color: var(--cream);
+    font-family: Arial, sans-serif;
+  }
+
+  .controls {
+    width: min(100%, 680px);
+    margin: 0 auto 18px;
+    color: #eee;
+    font: 14px/1.45 Arial, sans-serif;
+  }
+  .controls label { display: inline-block; margin-right: 12px; }
+  .controls input { max-width: 100%; }
+  .controls p { margin: 8px 0 0; color: #bbb; }
+
+  /* Lienzo vertical 2:3, equivalente a 1024 × 1536 px */
+  .poster {
+    position: relative;
+    width: min( min(100vw - 56px, 680px), 66.6667vh );
+    aspect-ratio: 2 / 3;
+    overflow: hidden;
+    isolation: isolate;
+    background: var(--black);
+    box-shadow: 0 18px 60px #0009;
+  }
+
+  .photo {
+    position: absolute;
+    inset: 0;
+    z-index: -3;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+  }
+
+  /* Degradado muy sutil para mantener legibles los textos sin alterar la foto */
+  .shade {
+    position: absolute;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      linear-gradient(180deg, rgba(0,0,0,.50) 0%, transparent 17%, transparent 72%, rgba(0,0,0,.68) 100%),
+      linear-gradient(90deg, rgba(0,0,0,.36) 0%, transparent 47%, rgba(0,0,0,.12) 100%);
+  }
+
+  .top-copy {
+    position: absolute;
+    top: 3.0%;
+    right: 5.4%;
+    width: 34%;
+    text-align: center;
+    color: var(--pink-bright);
+    font: 500 clamp(7px, 1.52vw, 15px)/1.36 "Oswald", sans-serif;
+    letter-spacing: .075em;
+    text-transform: uppercase;
+  }
+
+  .top-rule {
+    position: absolute;
+    top: 9.25%;
+    right: 5.6%;
+    width: 29%;
+    height: 1px;
+    background: var(--pink);
+  }
+  .top-star {
+    position: absolute;
+    top: 8.15%;
+    right: 4.2%;
+    color: var(--pink);
+    font: 400 clamp(20px, 4.4vw, 45px)/1 Georgia, serif;
+  }
+
+  .title {
+    position: absolute;
+    z-index: 1;
+    top: 23.2%;
+    left: 14.2%;
+    width: 78%;
+    margin: 0;
+    color: #f0b0c0;
+    font: italic 600 clamp(42px, 9.55vw, 98px)/.79 "Cormorant Garamond", Georgia, serif;
+    letter-spacing: -.065em;
+    text-shadow: 0 2px 18px rgba(0,0,0,.24);
+  }
+  .title span { display: block; white-space: nowrap; }
+  .title span:nth-child(2) { margin-left: 37%; }
+  .title span:nth-child(3) { margin-left: 36%; }
+
+  .orbit {
+    position: absolute;
+    z-index: 0;
+    top: 25.7%;
+    left: 4%;
+    width: 91%;
+    height: 18%;
+    border: 2px solid transparent;
+    border-left-color: #ef426d;
+    border-top-color: #3159bd;
+    border-radius: 50%;
+    transform: rotate(-10deg);
+    pointer-events: none;
+    opacity: .95;
+  }
+  .left-star {
+    position: absolute;
+    top: 28.4%;
+    left: 7.8%;
+    color: var(--pink);
+    font: 400 clamp(25px, 5.3vw, 54px)/1 Georgia, serif;
+    z-index: 1;
+  }
+
+  .description {
+    position: absolute;
+    left: 5.7%;
+    top: 48.0%;
+    width: 25.5%;
+    color: var(--cream);
+    font: 300 clamp(8px, 1.68vw, 17px)/1.48 "Oswald", sans-serif;
+    letter-spacing: .035em;
+    text-transform: uppercase;
+    text-shadow: 0 1px 8px #000;
+  }
+  .description p { margin: 0; }
+  .description .born { color: var(--pink-bright); font-weight: 600; }
+  .description .blue { color: #3784ee; font-weight: 500; }
+  .description .orange { color: var(--orange); font-weight: 500; }
+  .description .pink { color: var(--pink-bright); font-weight: 500; }
+
+  .footer {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 3.1%;
+    min-height: 7.2%;
+    display: grid;
+    grid-template-columns: 36% 36% 28%;
+    align-items: center;
+    color: var(--pink);
+    font-family: "Oswald", sans-serif;
+    text-transform: uppercase;
+    text-shadow: 0 1px 8px #000;
+  }
+  .date {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5%;
+    padding-left: 5%;
+  }
+  .date .day {
+    font: 500 clamp(48px, 10.8vw, 110px)/.8 "Cormorant Garamond", Georgia, serif;
+    color: var(--pink-bright);
+  }
+  .date .month {
+    font: 400 clamp(12px, 2.45vw, 25px)/1.25 "Oswald", sans-serif;
+    letter-spacing: .04em;
+  }
+  .venue {
+    height: 100%;
+    border-left: 2px solid var(--pink);
+    border-right: 2px solid var(--pink);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: var(--cream);
+    font: 400 clamp(15px, 3.3vw, 34px)/1.1 "Oswald", sans-serif;
+    letter-spacing: .035em;
+  }
+  .venue small {
+    margin-top: 4px;
+    font: 300 clamp(9px, 1.75vw, 18px)/1.2 "Oswald", sans-serif;
+    letter-spacing: .22em;
+  }
+  .time {
+    text-align: center;
+    color: var(--pink-bright);
+    font: 500 clamp(29px, 6.3vw, 65px)/1 "Oswald", sans-serif;
+    letter-spacing: .015em;
+  }
+  .footer::before, .footer::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    width: 7.5%;
+    height: 1px;
+    background: var(--pink);
+  }
+  .footer::before { left: 0; }
+  .footer::after { right: 0; }
+
+  @media (max-width: 520px) {
+    body { padding: 12px; }
+    .poster { width: calc(100vw - 24px); }
+    .controls { width: calc(100vw - 24px); }
+  }
+
+  @media print {
+    @page { size: 2:3; margin: 0; }
+    body { padding: 0; margin: 0; background: white; display: block; }
+    .controls { display: none; }
+    .poster { width: 100vw; height: 150vw; box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+  <main>
+    <div class="controls">
+      <label for="photoInput">Elegí tu fotografía:</label>
+      <input id="photoInput" type="file" accept="image/*">
+      <p>La foto se coloca sin filtros ni modificaciones. Para imprimir o guardar como PDF, usá Imprimir → Guardar como PDF.</p>
+    </div>
+
+    <section class="poster" aria-label="Flyer El susurro de todas las cosas">
+      <img class="photo" id="posterPhoto" src="tu-foto.jpg" alt="">
+      <div class="shade"></div>
+
+      <div class="top-copy">Una puesta en escena<br>performática que fusiona<br>pole dance, danza y lyrapole.</div>
+      <div class="top-rule"></div>
+      <div class="top-star">✦</div>
+
+      <div class="orbit"></div>
+      <div class="left-star">✦</div>
+
+      <h1 class="title">
+        <span>El susurro</span>
+        <span>de todas</span>
+        <span>las cosas</span>
+      </h1>
+
+      <div class="description">
+        <p>Con la música<br>
+        del álbum<br>
+        <span class="born">Born This Way</span><br>
+        como hilo conductor,<br>
+        recorremos distintas<br>
+        experiencias posibles<br>
+        que nacen a partir<br>
+        de la salida del clóset:<br>
+        el <span class="blue">descubrimiento</span>,<br>
+        <span class="orange">la revelación</span>,<br>
+        el encuentro con une<br>
+        misme, el rechazo,<br>
+        <span class="pink">la celebración</span> y<br>
+        la <span class="blue">libertad de ser.</span></p>
+      </div>
+
+      <footer class="footer">
+        <div class="date">
+          <span class="day">5</span>
+          <span class="month">de<br>diciembre</span>
+        </div>
+        <div class="venue">
+          <span>La Tribu Mostra</span>
+          <small>Lambaré 873</small>
+        </div>
+        <div class="time">21 HS</div>
+      </footer>
+    </section>
+  </main>
+
+<script>
+  const photoInput = document.getElementById('photoInput');
+  const posterPhoto = document.getElementById('posterPhoto');
+
+  photoInput.addEventListener('change', (event) => {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { posterPhoto.src = reader.result; };
+    reader.readAsDataURL(file);
+  });
+</script>
+</body>
+</html>

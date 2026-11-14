@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="es">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>El susurro de todas las cosas — Flyer</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;1,400&family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@400;500;600&family=Barlow+Semi+Condensed:wght@400;500;600&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --black: #080808;
+      --pink: #e9a8b9;
+      --pink-bright: #f078a2;
+      --blue: #1760d5;
+      --orange: #ff6b20;
+      --cream: #eee5e2;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      padding: 28px;
+      display: grid;
+      place-items: center;
+      background: #222;
+      color: var(--cream);
+      font-family: Arial, sans-serif;
+    }
+
+    .controls {
+      width: min(100%, 680px);
+      margin: 0 auto 18px;
+      color: #eee;
+      font: 14px/1.45 Arial, sans-serif;
+    }
+
+    .controls label {
+      display: inline-block;
+      margin-right: 12px;
+    }
+
+    .controls input {
+      max-width: 100%;
+    }
+
+    .controls p {
+      margin: 8px 0 0;
+      color: #bbb;
+    }
+
+    .controls button {
+      margin-top: 10px;
+      padding: 8px 16px;
+      border: 0;
+      border-radius: 4px;
+      background: var(--pink-bright);
+      color: #111;
+      font: 600 14px/1 Arial, sans-serif;
+      cursor: pointer;
+    }
+
+    .controls button:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    /* Lienzo vertical 2:3, equivalente a 1024 × 1536 px */
+    .poster {
+      position: relative;
+      width: min(min(100vw - 56px, 680px), 66.6667vh);
+      aspect-ratio: 2 / 3;
+      overflow: hidden;
+      isolation: isolate;
+      container-type: inline-size;
+      background: var(--black);
+      box-shadow: 0 18px 60px #0009;
+    }
+
+    .photo {
+      position: absolute;
+      inset: 0;
+      z-index: -3;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    /* Degradado muy sutil para mantener legibles los textos sin alterar la foto */
+    .shade {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      pointer-events: none;
+      background:
+        linear-gradient(180deg, rgba(0, 0, 0, .50) 0%, transparent 17%, transparent 72%, rgba(0, 0, 0, .68) 100%),
+        linear-gradient(90deg, rgba(0, 0, 0, .36) 0%, transparent 47%, rgba(0, 0, 0, .12) 100%);
+    }
+
+    .top-copy {
+      position: absolute;
+      top: 2.7%;
+      right: 2.4%;
+      width: 38%;
+      text-align: center;
+      color: var(--pink-bright);
+      font: 600 1.6cqw/1.4 "Barlow Semi Condensed", sans-serif;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .top-rule {
+      position: absolute;
+      top: 9.3%;
+      right: 5.6%;
+      width: 29%;
+      height: 1px;
+      background: var(--pink);
+    }
+
+    .top-star {
+      position: absolute;
+      top: 8.15%;
+      right: 4.2%;
+      color: var(--pink);
+      font: 400 6cqw/1 Georgia, serif;
+    }
+
+    .title {
+      position: absolute;
+      z-index: 1;
+      top: 24.3%;
+      left: 14.4%;
+      width: 80%;
+      margin: 0;
+      color: #f3bccb;
+      font: italic 400 80px/.65 "Playfair Display", Georgia, serif;
+      letter-spacing: -.035em;
+      /* Sombra suave en capas: separa el título de la foto sin que se note un "recuadro" */
+      text-shadow:
+        0 0 2px rgba(0, 0, 0, .35),
+        0 2px 8px rgba(0, 0, 0, .45),
+        0 6px 28px rgba(0, 0, 0, .55),
+        0 0 60px rgba(0, 0, 0, .35);
+    }
+
+    .title span {
+      display: block;
+      white-space: nowrap;
+    }
+
+    .title span:nth-child(2) {
+      margin-left: 34%;
+    }
+
+    .title span:nth-child(3) {
+      margin-left: 34%;
+    }
+
+    /* Dos tramos de órbita (no la elipse entera), en el mismo sistema 1024×1536 del póster */
+    .orbit {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+
+    .orbit path {
+      fill: none;
+      stroke-width: 2.6;
+      stroke-linecap: round;
+    }
+
+    .left-star {
+      position: absolute;
+      top: 28.6%;
+      left: 8.6%;
+      color: var(--pink);
+      font: 400 7cqw/1 Georgia, serif;
+      z-index: 1;
+    }
+
+    .description {
+      position: absolute;
+      left: 5.7%;
+      top: 57.7%;
+      width: 25.5%;
+      color: var(--cream);
+      font: 400 1.58cqw/1.52 "Barlow", sans-serif;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+      text-shadow: 0 1px 8px #000;
+    }
+
+    .description p {
+      margin: 0;
+    }
+
+    /* v2: texto corto, con el álbum como protagonista */
+    .description .kicker {
+      display: block;
+      font-size: 1.5cqw;
+      letter-spacing: .14em;
+      color: var(--cream);
+    }
+
+    .description .album {
+      display: block;
+      margin: .1em 0 0;
+      color: var(--pink-bright);
+      font: 600 6cqw/.95 "Barlow Condensed", sans-serif;
+      white-space: nowrap;
+      letter-spacing: .02em;
+      text-shadow: 0 0 18px rgba(240, 120, 162, .35), 0 2px 10px #000;
+    }
+
+    .description .album-rule {
+      display: block;
+      width: 38%;
+      height: 1px;
+      margin: 1.1em 0 1em;
+      background: var(--pink);
+    }
+
+    .description .born {
+      color: var(--pink-bright);
+      font-weight: 600;
+    }
+
+    .description .blue {
+      color: #3784ee;
+      font-weight: 500;
+    }
+
+    .description .orange {
+      color: var(--orange);
+      font-weight: 500;
+    }
+
+    .description .pink {
+      color: var(--pink-bright);
+      font-weight: 500;
+    }
+
+    .footer {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 4.2%;
+      min-height: 6.4%;
+      display: grid;
+      grid-template-columns: 36% 33.4% 30.6%;
+      align-items: center;
+      color: var(--pink);
+      font-family: "Barlow Condensed", sans-serif;
+      text-transform: uppercase;
+      text-shadow: 0 1px 8px #000;
+    }
+
+    .date {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6%;
+      padding-left: 4%;
+    }
+
+    .date .day {
+      font: 400 11.5cqw/.8 "Playfair Display", Georgia, serif;
+      transform: translateY(-14%);
+      color: var(--pink-bright);
+    }
+
+    .date .month {
+      font: 500 3.75cqw/1.08 "Barlow Condensed", sans-serif;
+      letter-spacing: .03em;
+    }
+
+    .venue {
+      height: 100%;
+      border-left: 2px solid var(--pink);
+      border-right: 2px solid var(--pink);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      color: var(--cream);
+      font: 500 3.6cqw/1.1 "Barlow Condensed", sans-serif;
+      letter-spacing: .04em;
+    }
+
+    .venue small {
+      margin-top: 4px;
+      font: 400 2.1cqw/1.2 "Barlow Condensed", sans-serif;
+      letter-spacing: .32em;
+    }
+
+    .time {
+      text-align: center;
+      padding-right: 7.5%;
+      color: var(--pink-bright);
+      font: 600 6.2cqw/1 "Playfair Display", Georgia, serif;
+      letter-spacing: 0;
+    }
+
+    .footer::before,
+    .footer::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      width: 7.5%;
+      height: 1px;
+      background: var(--pink);
+    }
+
+    .footer::before {
+      left: 0;
+    }
+
+    .footer::after {
+      right: 0;
+    }
+
+    @media (max-width: 520px) {
+      body {
+        padding: 12px;
+      }
+
+      .poster {
+        width: calc(100vw - 24px);
+      }
+
+      .controls {
+        width: calc(100vw - 24px);
+      }
+    }
+
+    @media print {
+      @page {
+        size: 2:3;
+        margin: 0;
+      }
+
+      body {
+        padding: 0;
+        margin: 0;
+        background: white;
+        display: block;
+      }
+
+      .controls {
+        display: none;
+      }
+
+      .poster {
+        width: 100vw;
+        height: 150vw;
+        box-shadow: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <div class="controls">
+      <label for="photoInput">Elegí tu fotografía:</label>
+      <input id="photoInput" type="file" accept="image/*">
+      <button id="downloadBtn" type="button">Descargar imagen (PNG)</button>
+      <p>La foto se coloca sin filtros ni modificaciones. Para imprimir o guardar como PDF, usá Imprimir → Guardar como
+        PDF.</p>
+    </div>
+
+    <section class="poster" aria-label="Flyer El susurro de todas las cosas">
+      <img class="photo" id="posterPhoto" src="tu-foto.jpg" alt="">
+      <div class="shade"></div>
+
+      <div class="top-copy">Una puesta en escena<br>performática que fusiona<br>pole dance, danza y lyrapole.</div>
+      <div class="top-rule"></div>
+      <div class="top-star">✦</div>
+
+      <svg class="orbit" viewBox="0 0 1024 1536" preserveAspectRatio="none" aria-hidden="true">
+        <defs>
+          <!-- Tramo izquierdo: nace casi invisible en la estrella y se vuelve rojo/coral abajo -->
+          <linearGradient id="arcLeft" gradientUnits="userSpaceOnUse" x1="118" y1="468" x2="340" y2="640">
+            <stop offset="0" stop-color="#f3a6c0" stop-opacity=".15" />
+            <stop offset=".12" stop-color="#f06aa0" stop-opacity=".9" />
+            <stop offset=".65" stop-color="#ff4a4a" stop-opacity="1" />
+            <stop offset=".9" stop-color="#ff6a3a" stop-opacity=".8" />
+            <stop offset="1" stop-color="#ff6a3a" stop-opacity="0" />
+          </linearGradient>
+          <!-- Tramo derecho: azul que pasa a violeta y se desvanece -->
+          <linearGradient id="arcRight" gradientUnits="userSpaceOnUse" x1="740" y1="345" x2="830" y2="515">
+            <stop offset="0" stop-color="#3a5bd8" stop-opacity="0" />
+            <stop offset=".3" stop-color="#3f5fe0" stop-opacity="1" />
+            <stop offset=".75" stop-color="#7a5bdc" stop-opacity="1" />
+            <stop offset="1" stop-color="#9a5fd8" stop-opacity="0" />
+          </linearGradient>
+        </defs>
+        <path stroke="url(#arcLeft)" d="M118 468 C 60 488, 30 535, 48 572 C 70 618, 200 646, 340 640" />
+        <path stroke="url(#arcRight)" d="M740 348 C 840 322, 955 318, 972 356 C 990 398, 905 470, 830 515" />
+      </svg>
+      <div class="left-star">✦</div>
+
+      <h1 class="title">
+        <span>El susurro</span>
+        <span>de todas</span>
+        <span>las cosas</span>
+      </h1>
+
+      <div class="description">
+        <span class="kicker">Con la música del álbum</span>
+        <span class="album">Born This Way</span>
+        <span class="album-rule"></span>
+        <p style="display: none;">como hilo conductor para recorrer distintas experiencias posibles que nacen a partir
+          de la salida del
+          clóset</p>
+      </div>
+
+      <footer class="footer">
+        <div class="date">
+          <span class="day">5</span>
+          <span class="month">de<br>diciembre</span>
+        </div>
+        <div class="venue">
+          <span>La Tribu Mostra</span>
+          <small>Lambaré 873</small>
+        </div>
+        <div class="time">21 HS</div>
+      </footer>
+    </section>
+  </main>
+
+  <script src="https://cdn.jsdelivr.net/npm/html-to-image@1.11.11/dist/html-to-image.js"></script>
+  <script>
+    const photoInput = document.getElementById('photoInput');
+    const posterPhoto = document.getElementById('posterPhoto');
+
+    photoInput.addEventListener('change', (event) => {
+      const file = event.target.files && event.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => { posterPhoto.src = reader.result; };
+      reader.readAsDataURL(file);
+    });
+
+    // Descarga del póster como PNG.
+    // Exporta siempre a 2160 × 3240 px (2:3) sin importar el tamaño en pantalla:
+    // se escala con pixelRatio, así el diseño queda idéntico a lo que ves.
+    const EXPORT_WIDTH = 2160;
+    const downloadBtn = document.getElementById('downloadBtn');
+    const poster = document.querySelector('.poster');
+
+    // html-to-image no puede leer el CSS de Google Fonts (es de otro dominio), así que
+    // lo bajamos a mano y convertimos cada fuente a base64 para incrustarla en el PNG.
+    // Solo se toman los subsets latin / latin-ext (alcanzan para español).
+    let fontEmbedCSS = null;
+    async function getFontEmbedCSS() {
+      if (fontEmbedCSS) return fontEmbedCSS;
+      const href = document.querySelector('link[href*="fonts.googleapis.com/css2"]').href;
+      const css = await (await fetch(href)).text();
+      const blocks = css.split('/*').filter(b => /^\s*latin(-ext)?\s*\*\//.test(b)).map(b => '/*' + b);
+      const toDataUrl = async (url) => {
+        const blob = await (await fetch(url)).blob();
+        return new Promise((resolve) => {
+          const r = new FileReader();
+          r.onload = () => resolve(r.result);
+          r.readAsDataURL(blob);
+        });
+      };
+      const inlined = await Promise.all(blocks.map(async (block) => {
+        const m = block.match(/url\((https:[^)]+)\)/);
+        return m ? block.replace(m[1], await toDataUrl(m[1])) : block;
+      }));
+      fontEmbedCSS = inlined.join('\n');
+      return fontEmbedCSS;
+    }
+
+    downloadBtn.addEventListener('click', async () => {
+      const label = downloadBtn.textContent;
+      downloadBtn.disabled = true;
+      downloadBtn.textContent = 'Generando…';
+      try {
+        await document.fonts.ready;
+        const options = {
+          pixelRatio: EXPORT_WIDTH / poster.offsetWidth,
+          backgroundColor: '#080808',
+          fontEmbedCSS: await getFontEmbedCSS(),
+          // si la foto no cargó (ej. tu-foto.jpg inexistente), no frena la exportación
+          imagePlaceholder: 'data:image/gif;base64,R0lGODlhAQABAAAAACw=',
+        };
+        // Safari a veces no pinta imágenes/fuentes en la primera pasada: se renderiza dos veces
+        await htmlToImage.toPng(poster, options);
+        const dataUrl = await htmlToImage.toPng(poster, options);
+
+        const link = document.createElement('a');
+        link.download = 'el-susurro-de-todas-las-cosas.png';
+        link.href = dataUrl;
+        link.click();
+      } catch (err) {
+        console.error(err);
+        alert('No se pudo generar la imagen. Revisá la consola para más detalle.');
+      } finally {
+        downloadBtn.disabled = false;
+        downloadBtn.textContent = label;
+      }
+    });
+  </script>
+</body>
+
+</html>
